@@ -58,22 +58,13 @@ async function run() {
             // const restockQuantity = req.body
             // const item = await serviceCollection.findOne(query);
             // const newQuantity = parseInt(item.quantity) + parseInt(req.body.quantity);
-            const newQuantity = parseInt(req.body.quantity);
-            const update = { $set: { quantity: newQuantity + "" } }
+            const newQuantity = req.body.quantity
+            const newSold = req.body.sold
+            const update = { $set: { quantity: newQuantity + "",  sold: newSold + "" } }
             const option = { upsert: true }
             const result = await serviceCollection.updateOne(query, update, option)
             res.json(result)
         })
-        //update delivered items in the database =>
-        // app.put('/service/:id', async (req, res) => {
-        //     const id = req.params.id
-        //     const query = { _id: ObjectId(id) }
-        //     const delivered = parseInt(req.body.quantity);
-        //     const update = { $set: { quantity: delivered + "" } }
-        //     const option = { upsert: true }
-        //     const result = await serviceCollection.updateOne(query, update, option)
-        //     res.json(result)
-        // })
 
         //Delete items from the database =>
         app.delete('/service/:id', async (req, res) => {
@@ -83,24 +74,27 @@ async function run() {
             res.json(result)
         })
 
-        //items collection API =>
-        // app.post('/items', async (req, res) => {
-        //     const item = req.body
-        //     const result = await itemCollection.insertOne(item)
-        //     res.send(result)
-        // })
+        // items collection API =>
         app.get('/items', async (req, res) => {
             const email = req.query.email
-            const query = {}
+            const query = {email: email}
+            const cursor = serviceCollection.find(query)
+            const services = await cursor.toArray()
+            res.send(services)
+        })
+        app.get('/items', async (req, res) => {
+            const email = req.query.email
+            console.log(email);
+            const query = {email: email}
             const cursor = serviceCollection.find(query)
             const order = await cursor.toArray()
             res.send(order)
         })
-        app.post('/items', async (req, res) => {
-            const order = req.body
-            const result = await serviceCollection.insertOne(order)
-            res.send(result)
-        })
+        // app.post('/items', async (req, res) => {
+        //     const order = req.body
+        //     const result = await serviceCollection.insertOne(order)
+        //     res.send(result)
+        // })
     }
     finally {
 
