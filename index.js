@@ -25,11 +25,9 @@ function verifyJWT(req, res, next) {
         }
         req.decoded = decoded
 
-        console.log('decoded', decoded)
+        next()
     })
 
-    // console.log('jwt verify', authHeader);
-    next()
 }
 
 
@@ -43,7 +41,7 @@ async function run() {
         const itemCollection = client.db('briteExpress').collection('items')
 
         //Auth  =>
-        app.post('/login', async (req, res) => {
+        app.post('/login', verifyJWT, async (req, res) => {
             const user = req.body
             const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
             res.send({ accessToken })
@@ -95,27 +93,13 @@ async function run() {
         })
 
         // myItems collection API =>
-        // app.get('/items', async (req, res) => {
-        //     const email = req.query.email
-        //     const query = {email: email}
-        //     const cursor = serviceCollection.find(query)
-        //     const services = await cursor.toArray()
-        //     res.send(services)
-        // })
         app.get('/items', verifyJWT, async (req, res) => {
-            // const authHeader = req.headers.authorization
             const decodedEmail = req.decoded.email
             const email = req.query.email
-            // console.log(email);
-            if (email === decodedEmail) {
-                const query = { email: email }
-                const cursor = serviceCollection.find(query)
-                const order = await cursor.toArray()
-                res.send(order)
-            }
-            else {
-                res.status(403).json({ error: 'You are not authorized to view this page' })
-            }
+            const query = { email: email }
+            const cursor = serviceCollection.find(query)
+            const services = await cursor.toArray()
+            res.send(services)
         })
     }
     finally {
