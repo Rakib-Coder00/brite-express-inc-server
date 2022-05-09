@@ -10,16 +10,16 @@
 
 - Project Server site Github Link: https://github.com/ProgrammingHeroWC4/warehouse-management-server-side-Rakib-Coder00.git
 
-- Live Client site Link: https://horizon-travel-6f421.web.app/
-- Live Server site Link: https://horizon-travel-6f421.web.app/
+- Live Client site Link: https://brite-express-inc.web.app/
+- Live Server site Link: https://enigmatic-river-27486.herokuapp.com/
 
 ## Acknowledgements
 
-- [Our Services](https://horizon-travel-6f421.web.app/services)
-- [Sign up Now](https://horizon-travel-6f421.web.app/signup)
-- [Checkout Packages  ](https://horizon-travel-6f421.web.app/checkout)
-- [Read Our Blogs ](https://horizon-travel-6f421.web.app/blog)
-- [About me](https://horizon-travel-6f421.web.app/about)
+- [Our Inventories](https://brite-express-inc.web.app/manageInventory)
+- [Sign up Now](https://brite-express-inc.web.app/signup)
+- [Checkout Packages  ](https://brite-express-inc.web.app/checkout)
+- [Read Our Blogs ](https://brite-express-inc.web.app/blog)
+- [About me](https://brite-express-inc.web.app/about)
 
 
 ## Technologies I used in this project 
