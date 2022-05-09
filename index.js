@@ -13,6 +13,25 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+function verifyJWT(req, res, next) {
+    const authHeader = req.headers.authorization
+    if (!authHeader) {
+        return res.status(401).json({ error: 'No token, authorization denied' })
+    }
+    const token = authHeader.split(' ')[1]
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).json({ error: 'Token is not valid' })
+        }
+        req.decoded = decoded
+
+        console.log('decoded', decoded)
+    })
+
+    // console.log('jwt verify', authHeader);
+    next()
+}
+
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.mwhxt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -51,6 +70,7 @@ async function run() {
             const result = await serviceCollection.insertOne(newItem)
             res.json(result)
         })
+
         // update items in the database =>
         app.put('/service/:id', async (req, res) => {
             const id = req.params.id
@@ -60,7 +80,7 @@ async function run() {
             // const newQuantity = parseInt(item.quantity) + parseInt(req.body.quantity);
             const newQuantity = req.body.quantity
             const newSold = req.body.sold
-            const update = { $set: { quantity: newQuantity + "",  sold: newSold + "" } }
+            const update = { $set: { quantity: newQuantity + "", sold: newSold + "" } }
             const option = { upsert: true }
             const result = await serviceCollection.updateOne(query, update, option)
             res.json(result)
@@ -75,20 +95,27 @@ async function run() {
         })
 
         // myItems collection API =>
-        app.get('/items', async (req, res) => {
+        // app.get('/items', async (req, res) => {
+        //     const email = req.query.email
+        //     const query = {email: email}
+        //     const cursor = serviceCollection.find(query)
+        //     const services = await cursor.toArray()
+        //     res.send(services)
+        // })
+        app.get('/items', verifyJWT, async (req, res) => {
+            // const authHeader = req.headers.authorization
+            const decodedEmail = req.decoded.email
             const email = req.query.email
-            const query = {email: email}
-            const cursor = serviceCollection.find(query)
-            const services = await cursor.toArray()
-            res.send(services)
-        })
-        app.get('/items', async (req, res) => {
-            const email = req.query.email
-            console.log(email);
-            const query = {email: email}
-            const cursor = serviceCollection.find(query)
-            const order = await cursor.toArray()
-            res.send(order)
+            // console.log(email);
+            if (email === decodedEmail) {
+                const query = { email: email }
+                const cursor = serviceCollection.find(query)
+                const order = await cursor.toArray()
+                res.send(order)
+            }
+            else {
+                res.status(403).json({ error: 'You are not authorized to view this page' })
+            }
         })
     }
     finally {
