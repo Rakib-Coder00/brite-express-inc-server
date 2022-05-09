@@ -74,7 +74,7 @@ async function run() {
             res.json(result)
         })
 
-        // items collection API =>
+        // myItems collection API =>
         app.get('/items', async (req, res) => {
             const email = req.query.email
             const query = {email: email}
@@ -90,11 +90,6 @@ async function run() {
             const order = await cursor.toArray()
             res.send(order)
         })
-        // app.post('/items', async (req, res) => {
-        //     const order = req.body
-        //     const result = await serviceCollection.insertOne(order)
-        //     res.send(result)
-        // })
     }
     finally {
 
